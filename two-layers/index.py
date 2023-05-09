@@ -1,25 +1,62 @@
-from flask import Flask,  request
-from controller import get_users,get_user_by_id,insert_user,update_user,delete_user
+from dataclasses import dataclass
+from flask import Flask, jsonify,  request
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
-@app.route('/users', methods=['GET'])
-def route_get_users():
-    return get_users()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-@app.route('/users/<user_id>', methods=['GET'])
-def route_get_user(user_id):
-    return get_user_by_id(user_id)
+db = SQLAlchemy(app)
 
-@app.route('/users/add',  methods = ['POST'])
-def route_add_user():
-    user = request.get_json()
-    return insert_user(user)
+@dataclass
+class Player(db.Model):
+    id: int
+    firstname: str
+    lastname: str
 
-@app.route('/users/update',  methods = ['PUT'])
-def route_update_user():
-    user = request.get_json()
-    return update_user(user)
+    id = db.Column(db.Integer, primary_key=True)
+    firstname = db.Column(db.String(100), nullable=False)
+    lastname = db.Column(db.String(100), nullable=False)
+    
 
-@app.route('/users/delete/<user_id>',  methods = ['DELETE'])
-def route_delete_user(user_id):
-    return delete_user(user_id)
+    def __repr__(self):
+        return f'<Player {self.firstname}>'
+
+@app.route('/players', methods=['GET'])
+def route_get_players():
+    return get_players()
+
+@app.route('/players/<player_id>', methods=['GET'])
+def route_get_player(player_id):
+    return get_player_by_id(player_id)
+
+@app.route('/players/add',  methods = ['POST'])
+def route_add_player():
+    player = request.get_json()
+    return insert_player(player)
+
+@app.route('/players/update',  methods = ['PUT'])
+def route_update_player():
+    player = request.get_json()
+    return update_player(player)
+
+@app.route('/players/delete/<player_id>',  methods = ['DELETE'])
+def route_delete_player(player_id):
+    return delete_player(player_id)
+
+
+def get_players():
+    players = Player.query.all()
+    return jsonify(players)
+
+def get_player_by_id():
+    return 'TODO'
+
+def insert_player():
+    return 'TODO'
+
+def update_player():
+    return 'TODO'
+
+def delete_player():
+    return 'TODO'
