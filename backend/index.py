@@ -1,9 +1,13 @@
 from flask import Flask, request
-from controllers.play import delete_play, get_play_by_id, get_plays, insert_play, update_play
+from controllers.login import login
+from flask_cors import CORS
 
+from controllers.play import delete_play, get_play_by_id, get_plays, insert_play, update_play
 from controllers.player import delete_player, get_player_by_id, get_players, insert_player, update_player
 
 from database import db
+
+
 
 app = Flask(__name__)
 
@@ -11,6 +15,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+
+CORS(app)
 
 # * Players
 
@@ -52,15 +58,12 @@ def route_get_play(play_id):
         play = request.get_json()
         return update_play(play_id,play)
     
-
 # * Login
+
 @app.route('/login', methods=['POST'])
-def route_get_play():
+def route_login():
     login_credentials = request.get_json()
     return login(login_credentials)
-
-
-    
 
 def handler():
     with app.app_context():
